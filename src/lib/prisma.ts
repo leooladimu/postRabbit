@@ -2,6 +2,7 @@ import { PrismaClient } from "@prisma/client";
 import { PrismaPg } from "@prisma/adapter-pg";
 import { Pool } from "pg";
 
+// Prisma 7 with pg adapter
 const globalForPrisma = globalThis as unknown as {
   pool: Pool | undefined;
   prisma: PrismaClient | undefined;
