@@ -10,10 +10,11 @@ export async function GET() {
     }
 
     let user = await db.user.findUnique({ where: { clerkId: userId } });
-    
+
     if (!user) {
-      const userData = await clerkClient().users.getUser(userId);
-      
+      const client = await clerkClient();
+      const userData = await client.users.getUser(userId);
+
       user = await db.user.create({
         data: {
           clerkId: userId,
