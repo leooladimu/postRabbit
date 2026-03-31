@@ -30,7 +30,7 @@ export default function Home() {
               <Link href="/dashboard" style={{ padding: "10px 20px", background: "var(--bark)", color: "#fff", borderRadius: "8px", cursor: "pointer", fontFamily: "DM Sans, sans-serif", fontSize: "0.95rem", fontWeight: 500, textDecoration: "none", display: "inline-block" }}>
                 Dashboard
               </Link>
-              <UserButton afterSignOutUrl="/" />
+              <UserButton />
             </>
           ) : (
             <Link href="/sign-in" style={{ padding: "10px 20px", background: "var(--rust)", color: "#fff", border: "none", borderRadius: "8px", cursor: "pointer", fontFamily: "DM Sans, sans-serif", fontSize: "0.95rem", fontWeight: 500, textDecoration: "none", display: "inline-block" }}>
