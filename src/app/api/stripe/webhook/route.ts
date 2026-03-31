@@ -1,8 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import Stripe from "stripe";
-import { prisma } from "@/lib/prisma";
+import { db } from "@/lib/db";
 
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, { apiVersion: "2024-12-18.acacia" });
+const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, { apiVersion: "2026-03-25.dahlia" });
 const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET!;
 
 export async function POST(req: NextRequest) {
@@ -24,7 +24,7 @@ export async function POST(req: NextRequest) {
       const customerId = session.customer as string;
 
       if (userId) {
-        await prisma.user.update({
+        await db.user.update({
           where: { id: userId },
           data: { stripeCustomerId: customerId, subscribed: true },
         });
@@ -36,7 +36,7 @@ export async function POST(req: NextRequest) {
       const subscription = event.data.object as Stripe.Subscription;
       const customerId = subscription.customer as string;
 
-      await prisma.user.updateMany({
+      await db.user.updateMany({
         where: { stripeCustomerId: customerId },
         data: { subscribed: false },
       });

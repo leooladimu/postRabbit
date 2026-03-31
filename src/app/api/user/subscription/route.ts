@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { auth, clerkClient } from "@clerk/nextjs/server";
-import { prisma } from "@/lib/prisma";
+import { db } from "@/lib/db";
 
 export async function GET() {
   try {
@@ -9,12 +9,12 @@ export async function GET() {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    let user = await prisma.user.findUnique({ where: { clerkId: userId } });
+    let user = await db.user.findUnique({ where: { clerkId: userId } });
     
     if (!user) {
       const userData = await clerkClient().users.getUser(userId);
       
-      user = await prisma.user.create({
+      user = await db.user.create({
         data: {
           clerkId: userId,
           email: userData.emailAddresses[0]?.emailAddress || "",
