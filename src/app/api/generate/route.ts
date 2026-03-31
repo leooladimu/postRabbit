@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@clerk/nextjs/server";
-import { prisma } from "@/lib/prisma";
+import { db } from "@/lib/db";
 import Anthropic from "@anthropic-ai/sdk";
 
 const anthropic = new Anthropic({
@@ -14,7 +14,7 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const user = await prisma.user.findUnique({ where: { clerkId: userId } });
+    const user = await db.user.findUnique({ where: { clerkId: userId } });
     if (!user || !user.subscribed) {
       return NextResponse.json({ error: "Subscription required" }, { status: 403 });
     }
@@ -31,7 +31,7 @@ export async function POST(req: NextRequest) {
 
     const content = message.content[0].type === "text" ? message.content[0].text : "";
 
-    await prisma.generatedPost.create({
+    await db.generatedPost.create({
       data: {
         userId: user.id,
         type: contentType,
