@@ -251,12 +251,68 @@ footer a:hover {
 }
 
 .success-msg {
-  display: none;
   margin-top: 18px;
   font-size: 1rem;
   color: var(--rust);
   font-weight: 500;
   animation: fadeUp 0.4s ease both;
+}
+
+/* ── DASHBOARD ── */
+.dashboard {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 60px 24px;
+  position: relative;
+  z-index: 1;
+}
+
+.dashboard-header {
+  margin-bottom: 40px;
+}
+
+.dashboard-header h1 {
+  font-family: "Playfair Display", serif;
+  font-size: clamp(1.8rem, 4vw, 2.6rem);
+  font-weight: 900;
+  color: var(--bark);
+  margin-bottom: 8px;
+}
+
+.dashboard-header p {
+  font-size: 1.1rem;
+  color: var(--stone);
+  font-weight: 300;
+}
+
+.dashboard-card {
+  background: #fff;
+  border-radius: 16px;
+  padding: 40px;
+  box-shadow: 0 4px 24px rgba(100, 30, 0, 0.1);
+}
+
+.dashboard-card h2 {
+  font-family: "Playfair Display", serif;
+  font-size: 1.4rem;
+  color: var(--bark);
+  margin-bottom: 12px;
+}
+
+.dashboard-card p {
+  color: var(--stone);
+  line-height: 1.7;
+}
+
+/* ── AUTH PAGES ── */
+.auth-page {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 24px;
+  position: relative;
+  z-index: 1;
 }
 
 @keyframes fadeUp {
@@ -268,4 +324,165 @@ footer a:hover {
   .waitlist { flex-direction: column; border-radius: 16px; }
   .waitlist input { border-radius: 0; padding: 16px 20px; }
   .waitlist button { border-radius: 0; padding: 16px 20px; }
+}
+
+/* ── DASHBOARD ── */
+.dashboard {
+  min-height: 100vh;
+  background: var(--cream);
+  padding: 40px 24px;
+}
+
+.dashboard-nav {
+  max-width: 1200px;
+  margin: 0 auto 40px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-bottom: 20px;
+  border-bottom: 2px solid var(--sand);
+}
+
+.dashboard-nav h1 {
+  font-family: "Playfair Display", serif;
+  font-size: 1.8rem;
+  color: var(--bark);
+}
+
+.dashboard-container {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.dashboard-header {
+  margin-bottom: 40px;
+}
+
+.dashboard-header h1 {
+  font-family: "Playfair Display", serif;
+  font-size: 2.5rem;
+  color: var(--bark);
+  margin-bottom: 12px;
+}
+
+.dashboard-header p {
+  font-size: 1.1rem;
+  color: var(--stone);
+}
+
+.dashboard-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 24px;
+  margin-bottom: 40px;
+}
+
+.dashboard-card {
+  background: white;
+  border-radius: 16px;
+  padding: 32px;
+  box-shadow: 0 4px 20px rgba(100, 30, 0, 0.08);
+  border: 1px solid var(--sand);
+}
+
+.dashboard-card h2 {
+  font-family: "Playfair Display", serif;
+  font-size: 1.5rem;
+  color: var(--rust);
+  margin-bottom: 16px;
+}
+
+.dashboard-card p {
+  color: var(--stone);
+  line-height: 1.6;
+  margin-bottom: 20px;
+}
+
+.dashboard-card button,
+.btn-primary {
+  padding: 12px 24px;
+  background: var(--rust);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-family: "DM Sans", sans-serif;
+  font-size: 1rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.dashboard-card button:hover,
+.btn-primary:hover {
+  background: var(--terra);
+}
+
+.form-group {
+  margin-bottom: 20px;
+}
+
+.form-group label {
+  display: block;
+  font-weight: 500;
+  color: var(--bark);
+  margin-bottom: 8px;
+}
+
+.form-group input,
+.form-group textarea,
+.form-group select {
+  width: 100%;
+  padding: 12px 16px;
+  border: 1px solid var(--sand);
+  border-radius: 8px;
+  font-family: "DM Sans", sans-serif;
+  font-size: 1rem;
+  color: var(--bark);
+}
+
+.form-group textarea {
+  min-height: 120px;
+  resize: vertical;
+}
+
+.generated-content {
+  background: var(--cream);
+  border: 1px solid var(--sand);
+  border-radius: 8px;
+  padding: 20px;
+  margin-top: 20px;
+  white-space: pre-wrap;
+  font-family: "DM Sans", sans-serif;
+  line-height: 1.7;
+  color: var(--bark);
+}
+
+.subscription-banner {
+  background: linear-gradient(135deg, var(--rust), var(--terra));
+  color: white;
+  padding: 24px;
+  border-radius: 12px;
+  margin-bottom: 32px;
+  text-align: center;
+}
+
+.subscription-banner h3 {
+  font-family: "Playfair Display", serif;
+  font-size: 1.5rem;
+  margin-bottom: 12px;
+}
+
+.subscription-banner button {
+  background: white;
+  color: var(--rust);
+  padding: 12px 32px;
+  border: none;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  margin-top: 12px;
+}
+
+.subscription-banner button:hover {
+  background: var(--cream);
 }

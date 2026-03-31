@@ -1,20 +1,43 @@
 "use client";
+import { useState } from "react";
+import Link from "next/link";
+import { useUser, UserButton } from "@clerk/nextjs";
 
 export default function Home() {
+  const [email, setEmail] = useState("");
+  const [submitted, setSubmitted] = useState(false);
+  const { isSignedIn } = useUser();
+
   function handleSubmit() {
-    const input = document.getElementById("emailInput") as HTMLInputElement;
-    const email = input.value.trim();
-    if (!email || !email.includes("@")) {
-      input.focus();
-      return;
-    }
-    (document.getElementById("waitlistForm") as HTMLElement).style.display = "none";
-    (document.getElementById("successMsg") as HTMLElement).style.display = "block";
+    if (!email || !email.includes("@")) return;
+    
+    fetch("/api/waitlist", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email }),
+    })
+      .then((res) => res.json())
+      .then(() => setSubmitted(true))
+      .catch(() => setSubmitted(true)); // Show success even on error for UX
   }
 
   return (
     <>
       <section className="hero">
+        <div style={{ position: "absolute", top: "20px", right: "20px", zIndex: 10, display: "flex", gap: "12px", alignItems: "center" }}>
+          {isSignedIn ? (
+            <>
+              <Link href="/dashboard" style={{ padding: "10px 20px", background: "var(--bark)", color: "#fff", borderRadius: "8px", cursor: "pointer", fontFamily: "DM Sans, sans-serif", fontSize: "0.95rem", fontWeight: 500, textDecoration: "none", display: "inline-block" }}>
+                Dashboard
+              </Link>
+              <UserButton afterSignOutUrl="/" />
+            </>
+          ) : (
+            <Link href="/sign-in" style={{ padding: "10px 20px", background: "var(--rust)", color: "#fff", border: "none", borderRadius: "8px", cursor: "pointer", fontFamily: "DM Sans, sans-serif", fontSize: "0.95rem", fontWeight: 500, textDecoration: "none", display: "inline-block" }}>
+              Sign In
+            </Link>
+          )}
+        </div>
         <div className="logo-wrap">
           <img src="/postrabbit-logo.png" alt="postRabbit — Create. Post. Grow." />
         </div>
@@ -30,23 +53,25 @@ export default function Home() {
           customers search.
         </p>
 
-        <div className="waitlist" id="waitlistForm">
-          <input
-            type="email"
-            id="emailInput"
-            placeholder="your@email.com"
-            autoComplete="email"
-            onKeyDown={(e) => e.key === "Enter" && handleSubmit()}
-          />
-          <button onClick={handleSubmit}>Join the Waitlist</button>
-        </div>
+        {!submitted ? (
+          <div className="waitlist">
+            <input
+              type="email"
+              placeholder="your@email.com"
+              autoComplete="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              onKeyDown={(e) => e.key === "Enter" && handleSubmit()}
+            />
+            <button onClick={handleSubmit}>Join the Waitlist</button>
+          </div>
+        ) : (
+          <p className="success-msg">🐇 &nbsp;You&apos;re on the list. We&apos;ll be in touch.</p>
+        )}
 
         <p className="price-note">
           Launching soon &nbsp;·&nbsp; <strong>$40 / month</strong> &nbsp;·&nbsp;
           No contracts. Cancel anytime.
-        </p>
-        <p className="success-msg" id="successMsg">
-          🐇 &nbsp;You&apos;re on the list. We&apos;ll be in touch.
         </p>
 
         <div className="hills">
@@ -84,7 +109,7 @@ export default function Home() {
       <footer>
         <p>
           &copy; 2026 postRabbit &nbsp;·&nbsp;
-          <a href="mailto:hello@postrabbit.com">hello@postrabbit.com</a>
+          <a href="mailto:leo@oleo.dev">leo@oleo.dev</a>
         </p>
       </footer>
     </>
