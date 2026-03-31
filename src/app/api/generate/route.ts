@@ -1,6 +1,11 @@
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@clerk/nextjs/server";
 import { prisma } from "@/lib/prisma";
+import Anthropic from "@anthropic-ai/sdk";
+
+const anthropic = new Anthropic({
+  apiKey: process.env.ANTHROPIC_API_KEY,
+});
 
 export async function POST(req: NextRequest) {
   try {
@@ -16,34 +21,41 @@ export async function POST(req: NextRequest) {
 
     const { businessName, location, keywords, contentType } = await req.json();
 
-    // TODO: Replace with actual Anthropic API call when ANTHROPIC_API_KEY is set
-    const mockContent = generateMockContent(businessName, location, keywords, contentType);
+    const prompt = buildPrompt(businessName, location, keywords, contentType);
+
+    const message = await anthropic.messages.create({
+      model: "claude-3-5-sonnet-20241022",
+      max_tokens: 1024,
+      messages: [{ role: "user", content: prompt }],
+    });
+
+    const content = message.content[0].type === "text" ? message.content[0].text : "";
 
     await prisma.generatedPost.create({
       data: {
         userId: user.id,
         type: contentType,
-        content: mockContent,
+        content,
       },
     });
 
-    return NextResponse.json({ content: mockContent });
+    return NextResponse.json({ content });
   } catch (error) {
     console.error("Content generation error:", error);
     return NextResponse.json({ error: "Failed to generate content" }, { status: 500 });
   }
 }
 
-function generateMockContent(businessName: string, location: string, keywords: string, contentType: string): string {
+function buildPrompt(businessName: string, location: string, keywords: string, contentType: string): string {
   const keywordList = keywords.split(",").map(k => k.trim());
   
   if (contentType === "meta") {
-    return `${businessName} in ${location} - Expert ${keywordList[0]} services. ${keywordList.slice(1).join(", ")}. Call today for a free quote!`;
+    return `Write a compelling meta description (150-160 characters) for ${businessName}, a business in ${location} that specializes in ${keywordList.join(", ")}. Focus on local SEO and include a call to action.`;
   }
   
   if (contentType === "google_business") {
-    return `🔧 New update from ${businessName}!\n\nLooking for ${keywordList[0]} in ${location}? We're here to help! Our team specializes in ${keywordList.join(", ")}.\n\nCall us today or visit our website to learn more. #${location.replace(/\s+/g, "")} #${keywordList[0].replace(/\s+/g, "")}`;
+    return `Write a Google Business Profile update (under 1500 characters) for ${businessName} in ${location}. Highlight services: ${keywordList.join(", ")}. Make it engaging, local, and include relevant hashtags.`;
   }
   
-  return `# ${keywordList[0].charAt(0).toUpperCase() + keywordList[0].slice(1)} Services in ${location}\n\nWhen you need ${keywordList[0]} in ${location}, ${businessName} is your trusted local expert. We understand the unique needs of ${location} residents and businesses.\n\n## Why Choose ${businessName}?\n\nOur team brings years of experience in ${keywordList.join(", ")}. We're committed to providing top-quality service that keeps your business running smoothly.\n\n## Our Services\n\n- ${keywordList.map(k => k.charAt(0).toUpperCase() + k.slice(1)).join("\n- ")}\n\nContact ${businessName} today to learn how we can help with your ${keywordList[0]} needs in ${location}.`;
+  return `Write a 400-500 word SEO-optimized blog post for ${businessName}, a business in ${location}. Focus on the topic: ${keywordList[0]}. Include these related keywords naturally: ${keywordList.slice(1).join(", ")}. Write in a professional but approachable tone. Include a clear headline and structure with subheadings.`;
 }
