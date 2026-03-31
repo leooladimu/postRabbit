@@ -1,8 +1,6 @@
 import { NextResponse } from "next/server";
-import { auth } from "@clerk/nextjs/server";
-import { PrismaClient } from "@/generated/prisma/client";
-
-const prisma = new PrismaClient();
+import { auth, clerkClient } from "@clerk/nextjs/server";
+import { prisma } from "@/lib/prisma";
 
 export async function GET() {
   try {
@@ -14,8 +12,7 @@ export async function GET() {
     let user = await prisma.user.findUnique({ where: { clerkId: userId } });
     
     if (!user) {
-      const clerkUser = await (await import("@clerk/nextjs/server")).clerkClient();
-      const userData = await clerkUser.users.getUser(userId);
+      const userData = await clerkClient().users.getUser(userId);
       
       user = await prisma.user.create({
         data: {
