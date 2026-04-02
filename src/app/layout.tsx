@@ -9,14 +9,14 @@ export const metadata: Metadata = {
   openGraph: {
     title: "postRabbit — Create. Post. Grow.",
     description: "AI-Powered SEO Content for Local Businesses",
-    images: ["/og-image.svg"],
+    images: ["/postRabbit.png"],
     type: "website",
   },
   twitter: {
     card: "summary_large_image",
     title: "postRabbit — Create. Post. Grow.",
     description: "AI-Powered SEO Content for Local Businesses",
-    images: ["/og-image.svg"],
+    images: ["/postRabbit.png"],
   },
 };
 
