@@ -438,6 +438,23 @@ footer a:hover {
   font-family: "DM Sans", sans-serif;
   font-size: 1rem;
   color: var(--bark);
+  background: #fff;
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+.form-group input:focus,
+.form-group textarea:focus,
+.form-group select:focus {
+  border-color: var(--rust);
+}
+
+.form-group input:disabled,
+.form-group textarea:disabled,
+.form-group select:disabled {
+  background: var(--sand);
+  opacity: 0.6;
+  cursor: not-allowed;
 }
 
 .form-group textarea {

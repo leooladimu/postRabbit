@@ -110,7 +110,6 @@ export default function DashboardPage() {
                 value={formData.businessName}
                 onChange={(e) => setFormData({ ...formData, businessName: e.target.value })}
                 placeholder="Your Business Name"
-                disabled={!subscribed}
               />
             </div>
 
@@ -121,7 +120,6 @@ export default function DashboardPage() {
                 value={formData.location}
                 onChange={(e) => setFormData({ ...formData, location: e.target.value })}
                 placeholder="City, State"
-                disabled={!subscribed}
               />
             </div>
 
@@ -132,7 +130,6 @@ export default function DashboardPage() {
                 value={formData.keywords}
                 onChange={(e) => setFormData({ ...formData, keywords: e.target.value })}
                 placeholder="plumber, emergency repair, 24/7"
-                disabled={!subscribed}
               />
             </div>
 
@@ -141,7 +138,6 @@ export default function DashboardPage() {
               <select
                 value={formData.contentType}
                 onChange={(e) => setFormData({ ...formData, contentType: e.target.value })}
-                disabled={!subscribed}
               >
                 <option value="blog">Blog Post</option>
                 <option value="meta">Meta Description</option>
