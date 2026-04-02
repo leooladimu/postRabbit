@@ -6,6 +6,18 @@ export const metadata: Metadata = {
   title: "postRabbit — Create. Post. Grow.",
   description:
     "postRabbit generates optimized blog posts, meta descriptions, and Google Business updates tailored to your local market.",
+  openGraph: {
+    title: "postRabbit — Create. Post. Grow.",
+    description: "AI-Powered SEO Content for Local Businesses",
+    images: ["/og-image.svg"],
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "postRabbit — Create. Post. Grow.",
+    description: "AI-Powered SEO Content for Local Businesses",
+    images: ["/og-image.svg"],
+  },
 };
 
 export default function RootLayout({
