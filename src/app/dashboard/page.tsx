@@ -14,6 +14,7 @@ export default function DashboardPage() {
   const [generatedContent, setGeneratedContent] = useState("");
   const [copied, setCopied] = useState(false);
   const [contentHistory, setContentHistory] = useState<any[]>([]);
+  const [selectedPost, setSelectedPost] = useState<any>(null);
   
   const [formData, setFormData] = useState({
     businessName: "",
@@ -94,6 +95,12 @@ export default function DashboardPage() {
     navigator.clipboard.writeText(generatedContent);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
+  }
+
+  function handleSelectPost(post: any) {
+    setSelectedPost(post);
+    setGeneratedContent(post.content);
+    setCopied(false);
   }
 
   if (loading) {
@@ -201,7 +208,28 @@ export default function DashboardPage() {
             <h2>Recent Content</h2>
             <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
               {contentHistory.slice(0, 5).map((post: any) => (
-                <div key={post.id} style={{ padding: "16px", background: "var(--cream)", borderRadius: "8px", border: "1px solid var(--sand)" }}>
+                <div 
+                  key={post.id} 
+                  onClick={() => handleSelectPost(post)}
+                  style={{ 
+                    padding: "16px", 
+                    background: selectedPost?.id === post.id ? "var(--sand)" : "var(--cream)", 
+                    borderRadius: "8px", 
+                    border: selectedPost?.id === post.id ? "2px solid var(--rust)" : "1px solid var(--sand)",
+                    cursor: "pointer",
+                    transition: "all 0.2s"
+                  }}
+                  onMouseEnter={(e) => {
+                    if (selectedPost?.id !== post.id) {
+                      e.currentTarget.style.borderColor = "var(--terra)";
+                    }
+                  }}
+                  onMouseLeave={(e) => {
+                    if (selectedPost?.id !== post.id) {
+                      e.currentTarget.style.borderColor = "var(--sand)";
+                    }
+                  }}
+                >
                   <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "8px" }}>
                     <span style={{ fontSize: "0.85rem", color: "var(--stone)", textTransform: "uppercase", fontWeight: 500 }}>{post.type.replace("_", " ")}</span>
                     <span style={{ fontSize: "0.85rem", color: "var(--stone)" }}>{new Date(post.createdAt).toLocaleDateString()}</span>
