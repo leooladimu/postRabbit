@@ -54,24 +54,15 @@ export default function Home() {
         </p>
 
         {!submitted ? (
-          <div className="waitlist">
-            <input
-              type="email"
-              placeholder="your@email.com"
-              autoComplete="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              onKeyDown={(e) => e.key === "Enter" && handleSubmit()}
-            />
-            <button onClick={handleSubmit}>Join the Waitlist</button>
-          </div>
+          <Link href={isSignedIn ? "/dashboard" : "/sign-up"} style={{ padding: "18px 48px", background: "var(--rust)", color: "#fff", border: "none", borderRadius: "60px", cursor: "pointer", fontFamily: "DM Sans, sans-serif", fontSize: "1.1rem", fontWeight: 600, textDecoration: "none", display: "inline-block", boxShadow: "0 8px 40px rgba(100, 30, 0, 0.18)", transition: "background 0.2s" }}>
+            Get Started
+          </Link>
         ) : (
           <p className="success-msg">🐇 &nbsp;You&apos;re on the list. We&apos;ll be in touch.</p>
         )}
 
         <p className="price-note">
-          Launching soon &nbsp;·&nbsp; <strong>$40 / month</strong> &nbsp;·&nbsp;
-          No contracts. Cancel anytime.
+          <strong>$40 / month</strong> &nbsp;·&nbsp; No contracts. Cancel anytime.
         </p>
 
         <div className="hills">

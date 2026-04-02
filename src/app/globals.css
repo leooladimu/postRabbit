@@ -347,6 +347,11 @@ footer a:hover {
   font-family: "Playfair Display", serif;
   font-size: 1.8rem;
   color: var(--bark);
+  transition: color 0.2s;
+}
+
+.dashboard-nav h1:hover {
+  color: var(--rust);
 }
 
 .dashboard-container {

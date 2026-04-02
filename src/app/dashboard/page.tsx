@@ -1,8 +1,9 @@
 "use client";
 
-import { useUser } from "@clerk/nextjs";
+import { useUser, UserButton } from "@clerk/nextjs";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 
 export default function DashboardPage() {
   const { user, isLoaded } = useUser();
@@ -11,6 +12,8 @@ export default function DashboardPage() {
   const [loading, setLoading] = useState(true);
   const [generating, setGenerating] = useState(false);
   const [generatedContent, setGeneratedContent] = useState("");
+  const [copied, setCopied] = useState(false);
+  const [contentHistory, setContentHistory] = useState<any[]>([]);
   
   const [formData, setFormData] = useState({
     businessName: "",
@@ -37,7 +40,19 @@ export default function DashboardPage() {
         setLoading(false);
       }
     }
-    if (user) checkSubscription();
+    async function fetchHistory() {
+      try {
+        const res = await fetch("/api/content/history");
+        const data = await res.json();
+        setContentHistory(data.posts || []);
+      } catch (error) {
+        console.error("Failed to fetch history:", error);
+      }
+    }
+    if (user) {
+      checkSubscription();
+      fetchHistory();
+    }
   }, [user]);
 
   async function handleSubscribe() {
@@ -53,6 +68,7 @@ export default function DashboardPage() {
   async function handleGenerate() {
     setGenerating(true);
     setGeneratedContent("");
+    setCopied(false);
     
     try {
       const res = await fetch("/api/generate", {
@@ -62,11 +78,22 @@ export default function DashboardPage() {
       });
       const data = await res.json();
       setGeneratedContent(data.content || "Failed to generate content");
+      
+      // Refresh history
+      const historyRes = await fetch("/api/content/history");
+      const historyData = await historyRes.json();
+      setContentHistory(historyData.posts || []);
     } catch (error) {
       setGeneratedContent("Error generating content. Please try again.");
     } finally {
       setGenerating(false);
     }
+  }
+
+  function handleCopy() {
+    navigator.clipboard.writeText(generatedContent);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
   }
 
   if (loading) {
@@ -82,7 +109,13 @@ export default function DashboardPage() {
   return (
     <main className="dashboard">
       <div className="dashboard-nav">
-        <h1>🐇 postRabbit</h1>
+        <Link href="/" style={{ textDecoration: "none" }}>
+          <h1 style={{ cursor: "pointer" }}>🐇 postRabbit</h1>
+        </Link>
+        <div style={{ display: "flex", gap: "16px", alignItems: "center" }}>
+          <Link href="/settings" style={{ color: "var(--bark)", textDecoration: "none", fontWeight: 500, fontSize: "0.95rem" }}>Settings</Link>
+          <UserButton />
+        </div>
       </div>
 
       <div className="dashboard-container">
@@ -149,11 +182,36 @@ export default function DashboardPage() {
           </button>
 
           {generatedContent && (
-            <div className="generated-content">
-              {generatedContent}
+            <div style={{ marginTop: "20px" }}>
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "12px" }}>
+                <h3 style={{ fontFamily: "'Playfair Display', serif", fontSize: "1.2rem", color: "var(--bark)", margin: 0 }}>Generated Content</h3>
+                <button onClick={handleCopy} style={{ padding: "8px 16px", background: copied ? "var(--terra)" : "var(--rust)", color: "#fff", border: "none", borderRadius: "6px", fontSize: "0.9rem", cursor: "pointer" }}>
+                  {copied ? "Copied!" : "Copy"}
+                </button>
+              </div>
+              <div className="generated-content">
+                {generatedContent}
+              </div>
             </div>
           )}
         </div>
+
+        {contentHistory.length > 0 && (
+          <div className="dashboard-card" style={{ marginTop: "24px" }}>
+            <h2>Recent Content</h2>
+            <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
+              {contentHistory.slice(0, 5).map((post: any) => (
+                <div key={post.id} style={{ padding: "16px", background: "var(--cream)", borderRadius: "8px", border: "1px solid var(--sand)" }}>
+                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "8px" }}>
+                    <span style={{ fontSize: "0.85rem", color: "var(--stone)", textTransform: "uppercase", fontWeight: 500 }}>{post.type.replace("_", " ")}</span>
+                    <span style={{ fontSize: "0.85rem", color: "var(--stone)" }}>{new Date(post.createdAt).toLocaleDateString()}</span>
+                  </div>
+                  <p style={{ fontSize: "0.95rem", color: "var(--bark)", lineHeight: 1.6, margin: 0, whiteSpace: "pre-wrap", maxHeight: "100px", overflow: "hidden" }}>{post.content.substring(0, 200)}...</p>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
       </div>
     </main>
   );
