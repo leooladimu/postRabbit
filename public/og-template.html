@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      width: 1200px;
+      height: 630px;
+      background: #faf3e8;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      overflow: hidden;
+    }
+    body::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(ellipse at center, rgba(228, 131, 74, 0.12) 0%, transparent 70%);
+      pointer-events: none;
+    }
+    .logo-container {
+      position: relative;
+      z-index: 1;
+      text-align: center;
+    }
+    .logo-container img {
+      width: 700px;
+      height: auto;
+      filter: drop-shadow(0 8px 32px rgba(100, 30, 0, 0.15));
+    }
+  </style>
+</head>
+<body>
+  <div class="logo-container">
+    <img src="postRabbit.png" alt="postRabbit">
+  </div>
+</body>
+</html>
