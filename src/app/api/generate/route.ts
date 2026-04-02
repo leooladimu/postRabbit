@@ -15,8 +15,8 @@ export async function POST(req: NextRequest) {
     }
 
     const user = await db.user.findUnique({ where: { clerkId: userId } });
-    if (!user || !user.subscribed) {
-      return NextResponse.json({ error: "Subscription required" }, { status: 403 });
+    if (!user) {
+      return NextResponse.json({ error: "User not found" }, { status: 404 });
     }
 
     const { businessName, location, keywords, contentType } = await req.json();
@@ -40,9 +40,9 @@ export async function POST(req: NextRequest) {
     });
 
     return NextResponse.json({ content });
-  } catch (error) {
+  } catch (error: any) {
     console.error("Content generation error:", error);
-    return NextResponse.json({ error: "Failed to generate content" }, { status: 500 });
+    return NextResponse.json({ error: error?.message || "Failed to generate content" }, { status: 500 });
   }
 }
 
