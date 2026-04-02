@@ -17,23 +17,26 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "User not found" }, { status: 404 });
     }
 
+    // Create or get price
+    let priceId = process.env.STRIPE_PRICE_ID;
+    if (!priceId) {
+      const product = await stripe.products.create({
+        name: "postRabbit Monthly Subscription",
+        description: "SEO content generation for your business",
+      });
+      const price = await stripe.prices.create({
+        product: product.id,
+        unit_amount: 4000,
+        currency: "usd",
+        recurring: { interval: "month" },
+      });
+      priceId = price.id;
+    }
+
     const session = await stripe.checkout.sessions.create({
       customer: user.stripeCustomerId || undefined,
       customer_email: !user.stripeCustomerId ? user.email : undefined,
-      line_items: [
-        {
-          price_data: {
-            currency: "usd",
-            product_data: {
-              name: "postRabbit Monthly Subscription",
-              description: "SEO content generation for your business",
-            },
-            unit_amount: 4000, // $40.00
-            recurring: { interval: "month" },
-          },
-          quantity: 1,
-        },
-      ],
+      line_items: [{ price: priceId, quantity: 1 }],
       mode: "subscription",
       success_url: `${req.headers.get("origin")}/dashboard?success=true`,
       cancel_url: `${req.headers.get("origin")}/dashboard?canceled=true`,
