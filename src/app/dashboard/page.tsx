@@ -145,7 +145,7 @@ export default function DashboardPage() {
               </select>
             </div>
 
-            <button onClick={handleGenerate} disabled={generating}>
+            <button onClick={handleGenerate} disabled={!subscribed || generating}>
               {generating ? "Generating..." : "Generate Content"}
             </button>
 

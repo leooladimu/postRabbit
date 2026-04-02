@@ -15,8 +15,8 @@ export async function POST(req: NextRequest) {
     }
 
     const user = await db.user.findUnique({ where: { clerkId: userId } });
-    if (!user) {
-      return NextResponse.json({ error: "User not found" }, { status: 404 });
+    if (!user || !user.subscribed) {
+      return NextResponse.json({ error: "Subscription required" }, { status: 403 });
     }
 
     const { businessName, location, keywords, contentType } = await req.json();
