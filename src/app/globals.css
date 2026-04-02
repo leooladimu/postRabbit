@@ -350,8 +350,9 @@ footer a:hover {
 }
 
 .dashboard-container {
-  max-width: 1200px;
+  max-width: 1400px;
   margin: 0 auto;
+  width: 100%;
 }
 
 .dashboard-header {
@@ -370,19 +371,13 @@ footer a:hover {
   color: var(--stone);
 }
 
-.dashboard-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-  gap: 24px;
-  margin-bottom: 40px;
-}
-
 .dashboard-card {
   background: white;
   border-radius: 16px;
-  padding: 32px;
+  padding: 40px;
   box-shadow: 0 4px 20px rgba(100, 30, 0, 0.08);
   border: 1px solid var(--sand);
+  max-width: 100%;
 }
 
 .dashboard-card h2 {

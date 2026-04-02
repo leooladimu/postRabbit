@@ -99,67 +99,60 @@ export default function DashboardPage() {
           <p>Generate SEO-optimized content for your business in seconds.</p>
         </div>
 
-        <div className="dashboard-grid">
-          <div className="dashboard-card">
-            <h2>Generate Content</h2>
-            
-            <div className="form-group">
-              <label>Business Name</label>
-              <input
-                type="text"
-                value={formData.businessName}
-                onChange={(e) => setFormData({ ...formData, businessName: e.target.value })}
-                placeholder="Your Business Name"
-              />
-            </div>
-
-            <div className="form-group">
-              <label>Location</label>
-              <input
-                type="text"
-                value={formData.location}
-                onChange={(e) => setFormData({ ...formData, location: e.target.value })}
-                placeholder="City, State"
-              />
-            </div>
-
-            <div className="form-group">
-              <label>Keywords</label>
-              <input
-                type="text"
-                value={formData.keywords}
-                onChange={(e) => setFormData({ ...formData, keywords: e.target.value })}
-                placeholder="plumber, emergency repair, 24/7"
-              />
-            </div>
-
-            <div className="form-group">
-              <label>Content Type</label>
-              <select
-                value={formData.contentType}
-                onChange={(e) => setFormData({ ...formData, contentType: e.target.value })}
-              >
-                <option value="blog">Blog Post</option>
-                <option value="meta">Meta Description</option>
-                <option value="google_business">Google Business Update</option>
-              </select>
-            </div>
-
-            <button onClick={handleGenerate} disabled={!subscribed || generating}>
-              {generating ? "Generating..." : "Generate Content"}
-            </button>
-
-            {generatedContent && (
-              <div className="generated-content">
-                {generatedContent}
-              </div>
-            )}
+        <div className="dashboard-card">
+          <h2>Generate Content</h2>
+          
+          <div className="form-group">
+            <label>Business Name</label>
+            <input
+              type="text"
+              value={formData.businessName}
+              onChange={(e) => setFormData({ ...formData, businessName: e.target.value })}
+              placeholder="Your Business Name"
+            />
           </div>
 
-          <div className="dashboard-card">
-            <h2>Recent Content</h2>
-            <p>Your generated content will appear here. Start by generating your first piece!</p>
+          <div className="form-group">
+            <label>Location</label>
+            <input
+              type="text"
+              value={formData.location}
+              onChange={(e) => setFormData({ ...formData, location: e.target.value })}
+              placeholder="City, State"
+            />
           </div>
+
+          <div className="form-group">
+            <label>Keywords</label>
+            <input
+              type="text"
+              value={formData.keywords}
+              onChange={(e) => setFormData({ ...formData, keywords: e.target.value })}
+              placeholder="plumber, emergency repair, 24/7"
+            />
+          </div>
+
+          <div className="form-group">
+            <label>Content Type</label>
+            <select
+              value={formData.contentType}
+              onChange={(e) => setFormData({ ...formData, contentType: e.target.value })}
+            >
+              <option value="blog">Blog Post</option>
+              <option value="meta">Meta Description</option>
+              <option value="google_business">Google Business Update</option>
+            </select>
+          </div>
+
+          <button onClick={handleGenerate} disabled={!subscribed || generating}>
+            {generating ? "Generating..." : "Generate Content"}
+          </button>
+
+          {generatedContent && (
+            <div className="generated-content">
+              {generatedContent}
+            </div>
+          )}
         </div>
       </div>
     </main>
