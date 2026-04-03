@@ -17,7 +17,7 @@ export async function GET() {
     const posts = await db.generatedPost.findMany({
       where: { userId: user.id },
       orderBy: { createdAt: "desc" },
-      take: 10,
+      take: 20,
     });
 
     return NextResponse.json({ posts });

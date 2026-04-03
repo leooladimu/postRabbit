@@ -36,6 +36,9 @@ export async function POST(req: NextRequest) {
         userId: user.id,
         type: contentType,
         content,
+        businessName,
+        location,
+        keywords,
       },
     });
 

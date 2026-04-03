@@ -4,22 +4,8 @@ import Link from "next/link";
 import { useUser, UserButton } from "@clerk/nextjs";
 
 export default function Home() {
-  const [email, setEmail] = useState("");
-  const [submitted, setSubmitted] = useState(false);
+  const [submitted] = useState(false);
   const { isSignedIn } = useUser();
-
-  function handleSubmit() {
-    if (!email || !email.includes("@")) return;
-    
-    fetch("/api/waitlist", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ email }),
-    })
-      .then((res) => res.json())
-      .then(() => setSubmitted(true))
-      .catch(() => setSubmitted(true)); // Show success even on error for UX
-  }
 
   return (
     <>
@@ -82,8 +68,8 @@ export default function Home() {
           </div>
           <div className="feature">
             <div className="feature-icon">📈</div>
-            <h3>Track Your Growth</h3>
-            <p>Connect Google Search Console and watch your rankings climb. postRabbit shows you exactly how your content is performing over time.</p>
+            <h3>Save &amp; Organize</h3>
+            <p>Every piece of content is saved with your business details and keywords — so you can revisit, reuse, and build on what works.</p>
           </div>
           <div className="feature">
             <div className="feature-icon">⚡</div>

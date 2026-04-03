@@ -28,12 +28,15 @@ model User {
 }
 
 model GeneratedPost {
-  id        String   @id @default(cuid())
-  userId    String
-  user      User     @relation(fields: [userId], references: [id])
-  type      String   // "blog" | "meta" | "google_business"
-  content   String
-  createdAt DateTime @default(now())
+  id           String   @id @default(cuid())
+  userId       String
+  user         User     @relation(fields: [userId], references: [id])
+  type         String   // "blog" | "meta" | "google_business"
+  content      String
+  businessName String?
+  location     String?
+  keywords     String?
+  createdAt    DateTime @default(now())
 }
 
 model Waitlist {

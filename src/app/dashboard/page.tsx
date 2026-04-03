@@ -234,6 +234,13 @@ export default function DashboardPage() {
                     <span style={{ fontSize: "0.85rem", color: "var(--stone)", textTransform: "uppercase", fontWeight: 500 }}>{post.type.replace("_", " ")}</span>
                     <span style={{ fontSize: "0.85rem", color: "var(--stone)" }}>{new Date(post.createdAt).toLocaleDateString()}</span>
                   </div>
+                  {(post.businessName || post.location || post.keywords) && (
+                    <div style={{ fontSize: "0.8rem", color: "var(--stone)", marginBottom: "8px", display: "flex", gap: "12px", flexWrap: "wrap" }}>
+                      {post.businessName && <span>🏢 {post.businessName}</span>}
+                      {post.location && <span>📍 {post.location}</span>}
+                      {post.keywords && <span>🔑 {post.keywords}</span>}
+                    </div>
+                  )}
                   <p style={{ fontSize: "0.95rem", color: "var(--bark)", lineHeight: 1.6, margin: 0, whiteSpace: "pre-wrap", maxHeight: "100px", overflow: "hidden" }}>{post.content.substring(0, 200)}...</p>
                 </div>
               ))}
