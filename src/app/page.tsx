@@ -30,7 +30,7 @@ export default function Home() {
 
         <h1 className="hero-headline">
           SEO content for your business,<br />
-          <em>written by AI in seconds.</em>
+          <em>written in seconds.</em>
         </h1>
 
         <p className="hero-sub">
