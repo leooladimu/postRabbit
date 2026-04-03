@@ -81,6 +81,7 @@ export default function Home() {
 
       <div className="band">
         <p>&ldquo;If you&apos;re waiting for a corporation to give you permission to work, you&apos;re standing in the wrong line.&rdquo;</p>
+        <p style={{ marginTop: "12px", fontSize: "0.95rem", fontStyle: "normal", opacity: 0.8 }}>— Sabrina Romanov</p>
       </div>
 
       <footer>
