@@ -78,6 +78,11 @@ export default function DashboardPage() {
         body: JSON.stringify(formData),
       });
       const data = await res.json();
+      console.log("Generate response:", res.status, data);
+      if (!res.ok) {
+        setGeneratedContent(`Error (${res.status}): ${data.error || "Unknown error"}`);
+        return;
+      }
       setGeneratedContent(data.content || "Failed to generate content");
       
       // Refresh history
