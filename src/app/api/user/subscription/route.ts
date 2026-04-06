@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
-import { auth, clerkClient } from "@clerk/nextjs/server";
-import { db } from "@/lib/db";
+import { auth } from "@clerk/nextjs/server";
+import { resolveUser } from "@/lib/resolve-user";
 
 export async function GET() {
   try {
@@ -9,21 +9,9 @@ export async function GET() {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    let user = await db.user.findUnique({ where: { clerkId: userId } });
+    const user = await resolveUser(userId, { createIfMissing: true });
 
-    if (!user) {
-      const client = await clerkClient();
-      const userData = await client.users.getUser(userId);
-
-      user = await db.user.create({
-        data: {
-          clerkId: userId,
-          email: userData.emailAddresses[0]?.emailAddress || "",
-        },
-      });
-    }
-
-    return NextResponse.json({ subscribed: user.subscribed });
+    return NextResponse.json({ subscribed: user!.subscribed });
   } catch (error) {
     console.error("Subscription check error:", error);
     return NextResponse.json({ error: "Failed to check subscription" }, { status: 500 });

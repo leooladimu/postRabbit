@@ -5,6 +5,16 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 
+interface GeneratedPost {
+  id: string;
+  type: string;
+  content: string;
+  businessName: string | null;
+  location: string | null;
+  keywords: string | null;
+  createdAt: string;
+}
+
 export default function DashboardPage() {
   const { user, isLoaded } = useUser();
   const router = useRouter();
@@ -13,8 +23,8 @@ export default function DashboardPage() {
   const [generating, setGenerating] = useState(false);
   const [generatedContent, setGeneratedContent] = useState("");
   const [copied, setCopied] = useState(false);
-  const [contentHistory, setContentHistory] = useState<any[]>([]);
-  const [selectedPost, setSelectedPost] = useState<any>(null);
+  const [contentHistory, setContentHistory] = useState<GeneratedPost[]>([]);
+  const [selectedPost, setSelectedPost] = useState<GeneratedPost | null>(null);
   
   const [formData, setFormData] = useState({
     businessName: "",
@@ -84,7 +94,7 @@ export default function DashboardPage() {
       const historyRes = await fetch("/api/content/history");
       const historyData = await historyRes.json();
       setContentHistory(historyData.posts || []);
-    } catch (error) {
+    } catch {
       setGeneratedContent("Error generating content. Please try again.");
     } finally {
       setGenerating(false);
@@ -97,7 +107,7 @@ export default function DashboardPage() {
     setTimeout(() => setCopied(false), 2000);
   }
 
-  function handleSelectPost(post: any) {
+  function handleSelectPost(post: GeneratedPost) {
     setSelectedPost(post);
     setGeneratedContent(post.content);
     setCopied(false);
@@ -207,7 +217,7 @@ export default function DashboardPage() {
           <div className="dashboard-card" style={{ marginTop: "24px" }}>
             <h2>Recent Content</h2>
             <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
-              {contentHistory.slice(0, 5).map((post: any) => (
+              {contentHistory.slice(0, 5).map((post) => (
                 <div 
                   key={post.id} 
                   onClick={() => handleSelectPost(post)}

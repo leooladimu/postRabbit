@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@clerk/nextjs/server";
+import { resolveUser } from "@/lib/resolve-user";
 import { db } from "@/lib/db";
 import Anthropic from "@anthropic-ai/sdk";
 
@@ -14,7 +15,7 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const user = await db.user.findUnique({ where: { clerkId: userId } });
+    const user = await resolveUser(userId);
     if (!user || !user.subscribed) {
       return NextResponse.json({ error: "Subscription required" }, { status: 403 });
     }
@@ -43,9 +44,10 @@ export async function POST(req: NextRequest) {
     });
 
     return NextResponse.json({ content });
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error("Content generation error:", error);
-    return NextResponse.json({ error: error?.message || "Failed to generate content" }, { status: 500 });
+    const message = error instanceof Error ? error.message : "Failed to generate content";
+    return NextResponse.json({ error: message }, { status: 500 });
   }
 }
 

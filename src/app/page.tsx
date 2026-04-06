@@ -1,10 +1,8 @@
 "use client";
-import { useState } from "react";
 import Link from "next/link";
 import { useUser, UserButton } from "@clerk/nextjs";
 
 export default function Home() {
-  const [submitted] = useState(false);
   const { isSignedIn } = useUser();
 
   return (
@@ -39,12 +37,14 @@ export default function Home() {
           customers search.
         </p>
 
-        {!submitted ? (
-          <Link href={isSignedIn ? "/dashboard" : "/sign-up"} style={{ padding: "18px 48px", background: "var(--rust)", color: "#fff", border: "none", borderRadius: "60px", cursor: "pointer", fontFamily: "DM Sans, sans-serif", fontSize: "1.1rem", fontWeight: 600, textDecoration: "none", display: "inline-block", boxShadow: "0 8px 40px rgba(100, 30, 0, 0.18)", transition: "background 0.2s" }}>
+        {!isSignedIn ? (
+          <Link href="/sign-up" style={{ padding: "18px 48px", background: "var(--rust)", color: "#fff", border: "none", borderRadius: "60px", cursor: "pointer", fontFamily: "DM Sans, sans-serif", fontSize: "1.1rem", fontWeight: 600, textDecoration: "none", display: "inline-block", boxShadow: "0 8px 40px rgba(100, 30, 0, 0.18)", transition: "background 0.2s" }}>
             Get Started
           </Link>
         ) : (
-          <p className="success-msg">🐇 &nbsp;You&apos;re on the list. We&apos;ll be in touch.</p>
+          <Link href="/dashboard" style={{ padding: "18px 48px", background: "var(--rust)", color: "#fff", border: "none", borderRadius: "60px", cursor: "pointer", fontFamily: "DM Sans, sans-serif", fontSize: "1.1rem", fontWeight: 600, textDecoration: "none", display: "inline-block", boxShadow: "0 8px 40px rgba(100, 30, 0, 0.18)", transition: "background 0.2s" }}>
+            Go to Dashboard
+          </Link>
         )}
 
         <p className="price-note">

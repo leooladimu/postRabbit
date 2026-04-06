@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { auth } from "@clerk/nextjs/server";
 import Stripe from "stripe";
+import { resolveUser } from "@/lib/resolve-user";
 import { db } from "@/lib/db";
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, { apiVersion: "2026-03-25.dahlia" });
@@ -12,7 +13,7 @@ export async function POST() {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const user = await db.user.findUnique({ where: { clerkId: userId } });
+    const user = await resolveUser(userId);
     if (!user || !user.stripeCustomerId) {
       return NextResponse.json({ error: "No subscription found" }, { status: 404 });
     }
