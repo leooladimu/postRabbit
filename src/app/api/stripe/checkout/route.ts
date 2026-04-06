@@ -12,7 +12,7 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const user = await db.user.findUnique({ where: { clerkId: userId } });
+    let user = await db.user.findUnique({ where: { clerkId: userId } });
     if (!user) {
       return NextResponse.json({ error: "User not found" }, { status: 404 });
     }
@@ -31,6 +31,19 @@ export async function POST(req: NextRequest) {
         recurring: { interval: "month" },
       });
       priceId = price.id;
+    }
+
+    // Clear stale test-mode Stripe customer ID if present
+    if (user.stripeCustomerId) {
+      try {
+        await stripe.customers.retrieve(user.stripeCustomerId);
+      } catch {
+        await db.user.update({
+          where: { id: user.id },
+          data: { stripeCustomerId: null },
+        });
+        user = { ...user, stripeCustomerId: null };
+      }
     }
 
     const session = await stripe.checkout.sessions.create({

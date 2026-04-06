@@ -51,6 +51,19 @@ export async function POST(req: NextRequest) {
       priceId = price.id;
     }
 
+    // Clear stale test-mode Stripe customer ID if present
+    if (user.stripeCustomerId) {
+      try {
+        await stripe.customers.retrieve(user.stripeCustomerId);
+      } catch {
+        await db.user.update({
+          where: { id: user.id },
+          data: { stripeCustomerId: null },
+        });
+        user = { ...user, stripeCustomerId: null };
+      }
+    }
+
     const session = await stripe.checkout.sessions.create({
       customer: user.stripeCustomerId || undefined,
       customer_email: !user.stripeCustomerId ? user.email : undefined,
