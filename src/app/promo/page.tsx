@@ -17,14 +17,19 @@ function PromoContent() {
     setError("");
     try {
       const res = await fetch("/api/stripe/promo", { method: "POST" });
+      if (!res.ok) {
+        const text = await res.text();
+        setError(`Error ${res.status}: ${text}`);
+        return;
+      }
       const data = await res.json();
       if (data.url) {
         window.location.href = data.url;
       } else {
         setError(data.error || "Something went wrong. Please try again.");
       }
-    } catch {
-      setError("Failed to start trial. Please try again.");
+    } catch (err) {
+      setError(`Failed to start trial: ${err}`);
     } finally {
       setActivating(false);
     }
