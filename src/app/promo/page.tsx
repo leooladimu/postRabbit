@@ -45,7 +45,7 @@ function PromoContent() {
           You&apos;ve been invited to try postRabbit — AI-powered SEO content for your local business.
         </p>
         <p style={{ color: "var(--stone)", lineHeight: 1.7, marginBottom: "32px", fontSize: "0.95rem" }}>
-          Get 30 days of full access, completely free. No charge until your trial ends.
+          Get 30 days of full access, completely free. Cancel anytime.
         </p>
 
         {canceled && (
