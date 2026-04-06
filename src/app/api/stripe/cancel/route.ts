@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { auth } from "@clerk/nextjs/server";
+import { auth, clerkClient } from "@clerk/nextjs/server";
 import Stripe from "stripe";
 import { db } from "@/lib/db";
 
@@ -12,7 +12,23 @@ export async function POST() {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const user = await db.user.findUnique({ where: { clerkId: userId } });
+    let user = await db.user.findUnique({ where: { clerkId: userId } });
+
+    // Fallback: find by email and update clerkId (handles test→live Clerk key migration)
+    if (!user) {
+      const client = await clerkClient();
+      const userData = await client.users.getUser(userId);
+      const email = userData.emailAddresses[0]?.emailAddress || "";
+
+      const existingByEmail = await db.user.findUnique({ where: { email } });
+      if (existingByEmail) {
+        user = await db.user.update({
+          where: { email },
+          data: { clerkId: userId },
+        });
+      }
+    }
+
     if (!user || !user.stripeCustomerId) {
       return NextResponse.json({ error: "No subscription found" }, { status: 404 });
     }
