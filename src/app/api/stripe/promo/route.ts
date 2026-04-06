@@ -16,12 +16,20 @@ export async function POST(req: NextRequest) {
     if (!user) {
       const client = await clerkClient();
       const userData = await client.users.getUser(userId);
-      user = await db.user.create({
-        data: {
-          clerkId: userId,
-          email: userData.emailAddresses[0]?.emailAddress || "",
-        },
-      });
+      const email = userData.emailAddresses[0]?.emailAddress || "";
+
+      // Check if user exists with this email but different clerkId (e.g. switched from dev to prod keys)
+      const existingByEmail = await db.user.findUnique({ where: { email } });
+      if (existingByEmail) {
+        user = await db.user.update({
+          where: { email },
+          data: { clerkId: userId },
+        });
+      } else {
+        user = await db.user.create({
+          data: { clerkId: userId, email },
+        });
+      }
     }
 
     if (user.subscribed) {

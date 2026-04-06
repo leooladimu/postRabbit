@@ -14,13 +14,19 @@ export async function GET() {
     if (!user) {
       const client = await clerkClient();
       const userData = await client.users.getUser(userId);
+      const email = userData.emailAddresses[0]?.emailAddress || "";
 
-      user = await db.user.create({
-        data: {
-          clerkId: userId,
-          email: userData.emailAddresses[0]?.emailAddress || "",
-        },
-      });
+      const existingByEmail = await db.user.findUnique({ where: { email } });
+      if (existingByEmail) {
+        user = await db.user.update({
+          where: { email },
+          data: { clerkId: userId },
+        });
+      } else {
+        user = await db.user.create({
+          data: { clerkId: userId, email },
+        });
+      }
     }
 
     return NextResponse.json({ subscribed: user.subscribed });
