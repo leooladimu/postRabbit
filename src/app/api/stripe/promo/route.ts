@@ -58,8 +58,9 @@ export async function POST(req: NextRequest) {
     });
 
     return NextResponse.json({ url: session.url });
-  } catch (error) {
+  } catch (error: unknown) {
+    const message = error instanceof Error ? error.message : String(error);
     console.error("Promo checkout error:", error);
-    return NextResponse.json({ error: "Failed to create promo checkout" }, { status: 500 });
+    return NextResponse.json({ error: `Failed to create promo checkout: ${message}` }, { status: 500 });
   }
 }
