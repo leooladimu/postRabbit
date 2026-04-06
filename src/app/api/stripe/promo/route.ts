@@ -64,17 +64,20 @@ export async function POST(req: NextRequest) {
       }
     }
 
+    const origin = req.headers.get("origin") || req.headers.get("referer")?.replace(/\/[^/]*$/, "") || process.env.NEXT_PUBLIC_APP_URL || "https://postrabbit.oleo.dev";
+
     const session = await stripe.checkout.sessions.create({
       customer: user.stripeCustomerId || undefined,
       customer_email: !user.stripeCustomerId ? user.email : undefined,
       line_items: [{ price: priceId, quantity: 1 }],
       mode: "subscription",
+      payment_method_collection: "always",
       subscription_data: {
         trial_period_days: 30,
         metadata: { promo: "30-day-free-trial" },
       },
-      success_url: `${req.headers.get("origin")}/dashboard?success=true&trial=true`,
-      cancel_url: `${req.headers.get("origin")}/promo?canceled=true`,
+      success_url: `${origin}/dashboard?success=true&trial=true`,
+      cancel_url: `${origin}/promo?canceled=true`,
       metadata: { userId: user.id, clerkId: userId, promo: "30-day-free-trial" },
     });
 

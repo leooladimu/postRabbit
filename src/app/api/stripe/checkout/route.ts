@@ -46,13 +46,15 @@ export async function POST(req: NextRequest) {
       }
     }
 
+    const origin = req.headers.get("origin") || req.headers.get("referer")?.replace(/\/[^/]*$/, "") || process.env.NEXT_PUBLIC_APP_URL || "https://postrabbit.oleo.dev";
+
     const session = await stripe.checkout.sessions.create({
       customer: user.stripeCustomerId || undefined,
       customer_email: !user.stripeCustomerId ? user.email : undefined,
       line_items: [{ price: priceId, quantity: 1 }],
       mode: "subscription",
-      success_url: `${req.headers.get("origin")}/dashboard?success=true`,
-      cancel_url: `${req.headers.get("origin")}/dashboard?canceled=true`,
+      success_url: `${origin}/dashboard?success=true`,
+      cancel_url: `${origin}/dashboard?canceled=true`,
       metadata: { userId: user.id, clerkId: userId },
     });
 
