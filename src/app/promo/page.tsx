@@ -1,11 +1,11 @@
 "use client";
 
 import { useUser } from "@clerk/nextjs";
-import { useState } from "react";
+import { Suspense, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 
-export default function PromoPage() {
+function PromoContent() {
   const { isLoaded, isSignedIn } = useUser();
   const searchParams = useSearchParams();
   const [activating, setActivating] = useState(false);
@@ -116,5 +116,13 @@ export default function PromoPage() {
         </p>
       </div>
     </main>
+  );
+}
+
+export default function PromoPage() {
+  return (
+    <Suspense>
+      <PromoContent />
+    </Suspense>
   );
 }
