@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { auth } from "@clerk/nextjs/server";
+import { auth, clerkClient } from "@clerk/nextjs/server";
 import Stripe from "stripe";
 import { db } from "@/lib/db";
 
@@ -12,9 +12,16 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const user = await db.user.findUnique({ where: { clerkId: userId } });
+    let user = await db.user.findUnique({ where: { clerkId: userId } });
     if (!user) {
-      return NextResponse.json({ error: "User not found" }, { status: 404 });
+      const client = await clerkClient();
+      const userData = await client.users.getUser(userId);
+      user = await db.user.create({
+        data: {
+          clerkId: userId,
+          email: userData.emailAddresses[0]?.emailAddress || "",
+        },
+      });
     }
 
     if (user.subscribed) {
