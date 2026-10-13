@@ -15,7 +15,7 @@
     "@prisma/adapter-pg": "^7.6.0",
     "@prisma/client": "^7.6.0",
     "@types/pg": "^8.20.0",
-    "next": "16.2.1",
+    "next": "^16.4.0",
     "pg": "^8.20.0",
     "prisma": "^7.6.0",
     "react": "19.2.4",
@@ -29,15 +29,15 @@
     "@types/react-dom": "^19",
     "dotenv": "^17.3.1",
     "eslint": "^9",
-    "eslint-config-next": "16.2.1",
+    "eslint-config-next": "^16.4.0",
     "tailwindcss": "^4",
     "typescript": "^5"
   },
   "allowScripts": {
-    "prisma@7.6.0": true,
-    "@prisma/engines@7.6.0": true,
     "sharp@0.34.5": true,
     "@clerk/shared@4.3.2": true,
-    "unrs-resolver@1.11.1": true
+    "unrs-resolver@1.11.1": true,
+    "prisma@7.10.0": true,
+    "@prisma/engines@7.10.0": true
   }
 }
