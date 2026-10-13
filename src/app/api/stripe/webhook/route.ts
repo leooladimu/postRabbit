@@ -43,6 +43,21 @@ export async function POST(req: NextRequest) {
       });
       break;
     }
+
+    case "invoice.payment_succeeded": {
+      const invoice = event.data.object as Stripe.Invoice;
+      const customerId = invoice.customer as string;
+
+      // Only act on subscription renewals, not one-off invoices
+      const subscriptionId = (invoice as unknown as { subscription?: string }).subscription;
+      if (subscriptionId) {
+        await db.user.updateMany({
+          where: { stripeCustomerId: customerId },
+          data: { subscribed: true },
+        });
+      }
+      break;
+    }
   }
 
   return NextResponse.json({ received: true });
