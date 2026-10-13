@@ -32,5 +32,12 @@
     "eslint-config-next": "16.2.1",
     "tailwindcss": "^4",
     "typescript": "^5"
+  },
+  "allowScripts": {
+    "prisma@7.6.0": true,
+    "@prisma/engines@7.6.0": true,
+    "sharp@0.34.5": true,
+    "@clerk/shared@4.3.2": true,
+    "unrs-resolver@1.11.1": true
   }
 }
