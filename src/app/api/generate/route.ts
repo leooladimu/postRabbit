@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@clerk/nextjs/server";
 import { resolveUser } from "@/lib/resolve-user";
 import { db } from "@/lib/db";
+import { hasSubscriptionAccess } from "@/lib/subscription";
 import Anthropic from "@anthropic-ai/sdk";
 
 const anthropic = new Anthropic({
@@ -16,7 +17,7 @@ export async function POST(req: NextRequest) {
     }
 
     const user = await resolveUser(userId);
-    if (!user || !user.subscribed) {
+    if (!user || !(await hasSubscriptionAccess(user.stripeCustomerId))) {
       return NextResponse.json({ error: "Subscription required" }, { status: 403 });
     }
 

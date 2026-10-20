@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@clerk/nextjs/server";
 import Stripe from "stripe";
 import { resolveUser } from "@/lib/resolve-user";
+import { hasSubscriptionAccess } from "@/lib/subscription";
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
   apiVersion: "2026-03-25.dahlia",
@@ -22,7 +23,7 @@ export async function POST(req: NextRequest) {
     }
 
     // Already subscribed — just send them to the dashboard
-    if (user.subscribed) {
+    if (await hasSubscriptionAccess(user.stripeCustomerId)) {
       const origin =
         req.headers.get("origin") ||
         process.env.NEXT_PUBLIC_APP_URL ||
@@ -54,6 +55,9 @@ export async function POST(req: NextRequest) {
       payment_method_collection: "if_required",
       subscription_data: {
         trial_period_days: trialDays,
+        trial_settings: {
+          end_behavior: { missing_payment_method: "cancel" },
+        },
       },
       success_url: `${origin}/dashboard?success=true`,
       cancel_url: `${origin}/promo/${trialDays}`,
