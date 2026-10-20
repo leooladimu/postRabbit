@@ -1,11 +1,11 @@
-import { NextRequest, NextResponse } from "next/server";
+import { NextResponse } from "next/server";
 import { auth } from "@clerk/nextjs/server";
 import Stripe from "stripe";
 import { resolveUser } from "@/lib/resolve-user";
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, { apiVersion: "2026-03-25.dahlia" });
 
-export async function POST(req: NextRequest) {
+export async function POST() {
   try {
     const { userId } = await auth();
     if (!userId) {
@@ -33,7 +33,7 @@ export async function POST(req: NextRequest) {
       priceId = price.id;
     }
 
-    const origin = req.headers.get("origin") || process.env.NEXT_PUBLIC_APP_URL || "https://postrabbit.oleo.dev";
+    const origin = process.env.NEXT_PUBLIC_APP_URL || "https://postrabbit.oleo.dev";
 
     const session = await stripe.checkout.sessions.create({
       customer: user.stripeCustomerId || undefined,

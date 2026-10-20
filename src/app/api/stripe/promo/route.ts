@@ -22,12 +22,10 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "User not found" }, { status: 404 });
     }
 
+    const origin = process.env.NEXT_PUBLIC_APP_URL || "https://postrabbit.oleo.dev";
+
     // Already subscribed — just send them to the dashboard
-    if (await hasSubscriptionAccess(user.stripeCustomerId)) {
-      const origin =
-        req.headers.get("origin") ||
-        process.env.NEXT_PUBLIC_APP_URL ||
-        "https://postrabbit.oleo.dev";
+    if (user.subscribed) {
       return NextResponse.json({ url: `${origin}/dashboard` });
     }
 
@@ -41,11 +39,6 @@ export async function POST(req: NextRequest) {
         { status: 500 }
       );
     }
-
-    const origin =
-      req.headers.get("origin") ||
-      process.env.NEXT_PUBLIC_APP_URL ||
-      "https://postrabbit.oleo.dev";
 
     const session = await stripe.checkout.sessions.create({
       customer: user.stripeCustomerId || undefined,
