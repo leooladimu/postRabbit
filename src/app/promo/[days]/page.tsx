@@ -3,9 +3,8 @@
 import { useParams, useRouter } from "next/navigation";
 import { useUser, UserButton } from "@clerk/nextjs";
 import Link from "next/link";
-import { useState } from "react";
-
-const ALLOWED_DAYS = [7, 14, 30];
+import { useEffect, useState } from "react";
+import { invalidTrialRedirectPath, parseTrialDaysParam } from "@/lib/trial-days";
 
 export default function PromoPage() {
   const params = useParams();
@@ -13,10 +12,16 @@ export default function PromoPage() {
   const { isSignedIn, isLoaded } = useUser();
   const [loading, setLoading] = useState(false);
 
-  const rawDays = Number(params.days);
-  const days = ALLOWED_DAYS.includes(rawDays) ? rawDays : 30;
+  // null means the URL isn't an exact allowed trial length. Never default to a trial:
+  // redirect instead. Wait for Clerk to load, or everyone would look signed out.
+  const days = parseTrialDaysParam(params.days);
+
+  useEffect(() => {
+    if (days === null && isLoaded) router.replace(invalidTrialRedirectPath(isSignedIn));
+  }, [days, isLoaded, isSignedIn, router]);
 
   async function handleStartTrial() {
+    if (days === null) return;
     if (!isSignedIn) {
       // Send to sign-up, then they'll come back to this page
       router.push(`/sign-up?redirect_url=/promo/${days}`);
@@ -40,6 +45,8 @@ export default function PromoPage() {
       setLoading(false);
     }
   }
+
+  if (days === null) return null;
 
   if (!isLoaded) {
     return (
@@ -116,7 +123,7 @@ export default function PromoPage() {
         <h1 className="hero-headline">
           Try postRabbit free
           <br />
-          <em>for {days} days.</em>
+          <em>for {days} {days === 1 ? "day" : "days"}.</em>
         </h1>
 
         <p className="hero-sub">

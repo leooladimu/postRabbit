@@ -8,6 +8,16 @@ import ts from "typescript";
 const require = createRequire(import.meta.url);
 const { NextRequest, NextResponse } = require("next/server");
 
+function loadTrialDays() {
+  const source = readFileSync(new URL("../src/lib/trial-days.ts", import.meta.url), "utf8");
+  const { outputText } = ts.transpileModule(source, {
+    compilerOptions: { module: ts.ModuleKind.CommonJS, target: ts.ScriptTarget.ES2022 },
+  });
+  const context = { exports: {} };
+  runInNewContext(outputText, context);
+  return context.exports;
+}
+
 // Execute the actual handlers with isolated configuration and mocked providers.
 function loadRoute(t, route, { appUrl, signedIn = true, subscribed = false }) {
   const createSession = t.mock.fn(async () => ({
@@ -26,6 +36,8 @@ function loadRoute(t, route, { appUrl, signedIn = true, subscribed = false }) {
     "@/lib/resolve-user": { resolveUser },
     // Promo now asks Stripe (via this module) instead of reading user.subscribed.
     "@/lib/subscription": { hasSubscriptionAccess: async () => subscribed },
+    // Real shared allowlist, so these tests exercise the same validation as production.
+    "@/lib/trial-days": loadTrialDays(),
     stripe: class Stripe {
       checkout = { sessions: { create: createSession } };
     },

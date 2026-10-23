@@ -90,6 +90,7 @@ test("billing state controls generation and webhook reconciliation", async (t) =
   };
   const policy = loadSource("lib/subscription.ts", mocks);
   mocks["@/lib/subscription"] = policy;
+  mocks["@/lib/trial-days"] = loadSource("lib/trial-days.ts", mocks);
   const generate = loadSource("app/api/generate/route.ts", mocks);
   const status = loadSource("app/api/user/subscription/route.ts", mocks);
   const webhook = loadSource("app/api/stripe/webhook/route.ts", mocks);
@@ -239,4 +240,40 @@ test("billing state controls generation and webhook reconciliation", async (t) =
     });
     assert.equal(checkoutCalls.at(-1).payment_method_collection, "if_required");
   });
+
+  await t.test("promo accepts a 1-day trial", async () => {
+    process.env.STRIPE_PRICE_ID = "price_local";
+    subscriptions = [];
+    const response = await promo.POST(new Request("https://app.test/api/stripe/promo", {
+      method: "POST", body: JSON.stringify({ days: 1 }),
+    }));
+    assert.equal(response.status, 200);
+    assert.equal(checkoutCalls.at(-1).subscription_data.trial_period_days, 1);
+  });
+
+  // Bad bodies are sent back to the dashboard, never defaulted to a free trial.
+  for (const [label, body] of [["malformed JSON", "{not json"], ["empty body", ""], ["JSON null", "null"], ["JSON array", "[]"]]) {
+    await t.test(`promo sends ${label} back to the dashboard and creates no session`, async () => {
+      process.env.STRIPE_PRICE_ID = "price_local";
+      subscriptions = [];
+      const sessionsBefore = checkoutCalls.length;
+      const response = await promo.POST(new Request("https://app.test/api/stripe/promo", { method: "POST", body }));
+      assert.equal(response.status, 200);
+      assert.match((await response.json()).url, /\/dashboard$/);
+      assert.equal(checkoutCalls.length, sessionsBefore);
+    });
+  }
+
+  // An unlisted or wrongly typed days value is an invalid request: no default trial, ever.
+  for (const [label, body] of [["unlisted number", { days: 5 }], ["numeric string", { days: "7" }], ["missing days", {}], ["null days", { days: null }], ["negative days", { days: -7 }]]) {
+    await t.test(`promo sends ${label} back to the dashboard and creates no session`, async () => {
+      process.env.STRIPE_PRICE_ID = "price_local";
+      subscriptions = [];
+      const sessionsBefore = checkoutCalls.length;
+      const response = await promo.POST(new Request("https://app.test/api/stripe/promo", { method: "POST", body: JSON.stringify(body) }));
+      assert.equal(response.status, 200);
+      assert.match((await response.json()).url, /\/dashboard$/);
+      assert.equal(checkoutCalls.length, sessionsBefore);
+    });
+  }
 });
