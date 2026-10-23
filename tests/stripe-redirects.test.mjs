@@ -24,6 +24,8 @@ function loadRoute(t, route, { appUrl, signedIn = true, subscribed = false }) {
       auth: async () => ({ userId: signedIn ? "clerk_test" : null }),
     },
     "@/lib/resolve-user": { resolveUser },
+    // Promo now asks Stripe (via this module) instead of reading user.subscribed.
+    "@/lib/subscription": { hasSubscriptionAccess: async () => subscribed },
     stripe: class Stripe {
       checkout = { sessions: { create: createSession } };
     },

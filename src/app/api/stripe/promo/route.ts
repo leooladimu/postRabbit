@@ -24,8 +24,9 @@ export async function POST(req: NextRequest) {
 
     const origin = process.env.NEXT_PUBLIC_APP_URL || "https://postrabbit.oleo.dev";
 
-    // Already subscribed — just send them to the dashboard
-    if (user.subscribed) {
+    // Already subscribed — just send them to the dashboard.
+    // Ask Stripe, not the cached user.subscribed flag: a stale flag would skip the trial checkout.
+    if (await hasSubscriptionAccess(user.stripeCustomerId)) {
       return NextResponse.json({ url: `${origin}/dashboard` });
     }
 
