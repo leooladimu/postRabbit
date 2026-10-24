@@ -8,7 +8,8 @@ import Link from "next/link";
 export default function SettingsPage() {
   const { user, isLoaded } = useUser();
   const router = useRouter();
-  const [subscribed, setSubscribed] = useState(false);
+  // null = plan check failed. Showing Inactive then could hide a paying user's Cancel button.
+  const [subscribed, setSubscribed] = useState<boolean | null>(null);
   const [loading, setLoading] = useState(true);
   const [canceling, setCanceling] = useState(false);
 
@@ -22,8 +23,10 @@ export default function SettingsPage() {
     async function checkSubscription() {
       try {
         const res = await fetch("/api/user/subscription");
+        if (!res.ok) throw new Error(`Subscription check failed: ${res.status}`);
         const data = await res.json();
-        setSubscribed(data.subscribed);
+        // Only a definite boolean counts; anything else stays "unknown" (null).
+        setSubscribed(typeof data.subscribed === "boolean" ? data.subscribed : null);
       } catch (error) {
         console.error("Failed to check subscription:", error);
       } finally {
@@ -91,7 +94,9 @@ export default function SettingsPage() {
 
         <div className="dashboard-card" style={{ marginTop: "24px" }}>
           <h2>Subscription</h2>
-          {subscribed ? (
+          {subscribed === null ? (
+            <p style={{ color: "var(--stone)" }}>We couldn&apos;t check your plan. Please refresh the page to try again.</p>
+          ) : subscribed ? (
             <div>
               <p style={{ color: "var(--stone)", marginBottom: "20px" }}>Status: <strong style={{ color: "var(--rust)" }}>Active</strong> ($40/month)</p>
               <button 

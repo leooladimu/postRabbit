@@ -18,7 +18,8 @@ interface GeneratedPost {
 export default function DashboardPage() {
   const { user, isLoaded } = useUser();
   const router = useRouter();
-  const [subscribed, setSubscribed] = useState(false);
+  // null = plan check failed. Kept separate from false so a paying user is never told to subscribe.
+  const [subscribed, setSubscribed] = useState<boolean | null>(null);
   const [loading, setLoading] = useState(true);
   const [generating, setGenerating] = useState(false);
   const [generatedContent, setGeneratedContent] = useState("");
@@ -43,8 +44,10 @@ export default function DashboardPage() {
     async function checkSubscription() {
       try {
         const res = await fetch("/api/user/subscription");
+        if (!res.ok) throw new Error(`Subscription check failed: ${res.status}`);
         const data = await res.json();
-        setSubscribed(data.subscribed);
+        // Only a definite boolean counts; anything else stays "unknown" (null).
+        setSubscribed(typeof data.subscribed === "boolean" ? data.subscribed : null);
       } catch (error) {
         console.error("Failed to check subscription:", error);
       } finally {
@@ -136,7 +139,14 @@ export default function DashboardPage() {
       </div>
 
       <div className="dashboard-container">
-        {!subscribed && (
+        {subscribed === null && (
+          <div className="subscription-banner">
+            <h3>We couldn&apos;t check your plan</h3>
+            <p>Please refresh the page to try again.</p>
+          </div>
+        )}
+
+        {subscribed === false && (
           <div className="subscription-banner">
             <h3>Subscribe to Start Generating Content</h3>
             <p>Get unlimited SEO content for $40/month. Cancel anytime.</p>
